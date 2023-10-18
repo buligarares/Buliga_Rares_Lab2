@@ -20,7 +20,9 @@ namespace Buliga_Rares_Lab2.Pages.Books
         }
 
         [BindProperty]
-      public Book Book { get; set; } = default!;
+        public Book Book { get; set; } = default!;
+        public string AuthorName { get; set; } = default!;
+        public string PublisherName { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,15 +31,20 @@ namespace Buliga_Rares_Lab2.Pages.Books
                 return NotFound();
             }
 
-            var book = await _context.Book.FirstOrDefaultAsync(m => m.ID == id);
+            var book = await _context.Book
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .FirstOrDefaultAsync(m => m.ID == id);
 
             if (book == null)
             {
                 return NotFound();
             }
-            else 
+            else
             {
                 Book = book;
+                AuthorName = $"{book.Author.FirstName} {book.Author.LastName}";
+                PublisherName = book.Publisher.PublisherName;
             }
             return Page();
         }

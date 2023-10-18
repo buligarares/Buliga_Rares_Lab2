@@ -19,24 +19,30 @@ namespace Buliga_Rares_Lab2.Pages.Books
             _context = context;
         }
 
-      public Book Book { get; set; } = default!; 
+        public Book Book { get; set; }
+        public string AuthorName { get; set; }
+        public string PublisherName { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Book == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var book = await _context.Book.FirstOrDefaultAsync(m => m.ID == id);
-            if (book == null)
+            Book = await _context.Book
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (Book == null)
             {
                 return NotFound();
             }
-            else 
-            {
-                Book = book;
-            }
+
+            AuthorName = $"{Book.Author.FirstName} {Book.Author.LastName}";
+            PublisherName = Book.Publisher.PublisherName;
+
             return Page();
         }
     }

@@ -36,8 +36,8 @@ namespace Buliga_Rares_Lab2.Pages.Books
                 return NotFound();
             }
             Book = book;
-           ViewData["AuthorID"] = new SelectList(_context.Set<Author>(), "ID", "ID");
-           ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "ID");
+            ViewData["AuthorID"] = new SelectList(_context.Author, "ID", "FirstName");
+            ViewData["PublisherID"] = new SelectList(_context.Publisher, "ID", "PublisherName");
             return Page();
         }
 
