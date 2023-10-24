@@ -19,5 +19,7 @@ namespace Buliga_Rares_Lab2.Data
         public DbSet<Buliga_Rares_Lab2.Models.Author>? Author { get; set; }
 
         public DbSet<Buliga_Rares_Lab2.Models.Publisher>? Publisher { get; set; }
+
+        public DbSet<Buliga_Rares_Lab2.Models.Category>? Category { get; set; }
     }
 }

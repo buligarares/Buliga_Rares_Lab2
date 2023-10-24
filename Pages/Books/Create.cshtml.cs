@@ -10,7 +10,7 @@ using Buliga_Rares_Lab2.Models;
 
 namespace Buliga_Rares_Lab2.Pages.Books
 {
-    public class CreateModel : PageModel
+    public class CreateModel : BookCategoriesPageModel
     {
         private readonly Buliga_Rares_Lab2.Data.Buliga_Rares_Lab2Context _context;
 
@@ -23,23 +23,56 @@ namespace Buliga_Rares_Lab2.Pages.Books
         {
             ViewData["AuthorID"] = new SelectList(_context.Author, "ID", "FirstName");
             ViewData["PublisherID"] = new SelectList(_context.Publisher, "ID", "PublisherName");
-            return Page();
 
+            // Include Author based on your lab requirements
+            // You can add this block to include Author
+            /*
+            ViewData["AuthorID"] = new SelectList(_context.Author.Select(x => new
+            {
+                x.ID,
+                FullName = x.LastName + " " + x.FirstName
+            }), "ID", "FullName");
+            */
+
+
+            // Initialize the AssignedCategoryDataList
+            AssignedCategoryDataList = new List<AssignedCategoryData>();
+            return Page();
         }
 
         [BindProperty]
-        public Book Book { get; set; } = default!;
-        
+        public Book Book { get; set; } = new Book(); // Ensure Book is initialized
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string[] selectedCategories)
         {
-          if (!ModelState.IsValid || _context.Book == null || Book == null)
+            if (selectedCategories == null)
+            {
+                ModelState.AddModelError("Book.BookCategories", "Please select at least one category.");
+            }
+
+            if (!ModelState.IsValid)
             {
                 return Page();
             }
 
+            // Add the Book to the context
             _context.Book.Add(Book);
+
+            // Include the BookCategories based on your lab requirements
+            if (selectedCategories != null)
+            {
+                Book.BookCategories = new List<BookCategory>();
+                foreach (var cat in selectedCategories)
+                {
+                    BookCategory catToAdd = new BookCategory
+                    {
+                        CategoryID = int.Parse(cat)
+                    };
+                    Book.BookCategories.Add(catToAdd);
+                }
+            }
+
+            // Save changes to the database
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
